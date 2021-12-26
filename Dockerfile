@@ -8,6 +8,7 @@ RUN go install github.com/d3mondev/puredns/v2@latest
 
 FROM alpine:3.14 AS massdns
 RUN <<eot
+#!/bin/ash
 apk add --update --no-cache build-base git ldns-dev
 git clone --branch=master --depth=1 https://github.com/blechschmidt/massdns.git
 cd /massdns
@@ -25,6 +26,7 @@ COPY --from=puredns /go/bin/puredns /usr/local/bin/
 WORKDIR /puredns
 COPY LICENSE .
 RUN <<eot
+#!/bin/ash
 apk add --update --no-cache ldns
 wget https://raw.githubusercontent.com/janmasarik/resolvers/master/resolvers.txt
 eot
