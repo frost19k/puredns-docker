@@ -1,29 +1,19 @@
-<p align="center">
-    <img src="https://img.shields.io/github/go-mod/go-version/d3mondev/puredns?style=for-the-badge">
-    <a href="https://pkg.go.dev/github.com/d3mondev/puredns/v2"><img src="https://img.shields.io/static/v1?label=doc&message=reference&color=teal&style=for-the-badge&logo=go"></a>
-    <img src="https://img.shields.io/github/workflow/status/d3mondev/puredns/build?style=for-the-badge">
-    <a href="https://codecov.io/gh/d3mondev/puredns"><img src="https://img.shields.io/codecov/c/github/d3mondev/puredns?style=for-the-badge&token=DHUSMB9I46"></a>
-    <a href="https://twitter.com/d3mondev"><img src="https://img.shields.io/twitter/follow/d3mondev?logo=twitter&style=for-the-badge"></a>
-</p>
-
 <p align="center"><img src="assets/puredns-logo.png" width="500"></p>
 
 <p align="center">
     Fast domain resolver and subdomain bruteforcing with accurate wildcard filtering
-    <br />
-    <a href="#getting-started"><strong>Getting Started »</strong></a>
     <br />
     <br />
     <a href="#usage">Usage</a>
     ·
     <a href="#how-it-works">How it works</a>
     ·
-    <a href="#sponsorship">Sponsorship</a>
-    ·
     <a href="#faq">FAQ</a>
 </p>
 
 # About
+
+###### Forked from https://github.com/d3mondev/puredns because they [do not wish to support a dockerised app](https://github.com/d3mondev/puredns/pull/20#issuecomment-919667417).
 
 **puredns** is a fast domain resolver and subdomain bruteforcing tool that can accurately filter out wildcard subdomains and DNS poisoned entries.
 
@@ -45,87 +35,40 @@ Think this is useful? :star: Star us on GitHub — it helps!
 * Save a list of valid domains, wildcard subdomain roots, and a clean massdns output containing only the valid entries
 * Read a list of domains or words from stdin and enable quiet mode for easy integration into custom automation pipelines
 
-# Sponsorship
-<p align="center"><a href="https://github.com/sponsors/d3mondev"><img src="assets/become-sponsor.jpg" width="300"></a></p>
-<table>
-    <tr>
-        <td>
-            <p>If my work is earning you money, <a href="https://github.com/sponsors/d3mondev">consider becoming a sponsor</a>! You can earn some unique perks!</p>
-            <p>It would also mean A WHOLE LOT ❤️ as it would allow me to continue working for free for the community. But no matter what you do, rest assured that my software will remain free and open-source for you to use.</p>
-        </td>
-    </tr>
-</table>
-
-# Getting Started
-
-## Prerequisites
-
-### massdns
-Puredns requires massdns on the host machine. If the path to the massdns binary is present in the PATH environment variable, puredns will work out of the box. A good place to copy the massdns executable is `/usr/local/bin` on most systems. Otherwise, you will need to specify the path to the massdns binary file using the `--bin` command-line argument.
-
-The following should work on most Debian based systems. [Follow the official instructions](https://github.com/blechschmidt/massdns#compilation) for more information.
-```
-git clone https://github.com/blechschmidt/massdns.git
-cd massdns
-make
-sudo make install
-```
-
-### go 1.15+
-
-The last two major releases of Go are supported. Note that go 1.16 is recommended.
-
-Refer to the official [Go installation page](https://golang.org/doc/install) for installation instructions.
-
-### List of public DNS resolver servers
-
-You need to obtain a list of public DNS servers in order to use puredns. [Refer to the FAQ](#how-do-i-get-resolvers-for-use-with-puredns) to learn how to curate your own list of working servers.
-
-## Installation
-
-### go 1.15, 1.16
-
-```
-GO111MODULE=on go get github.com/d3mondev/puredns/v2
-```
-
-### go 1.17+
-
-```
-go install github.com/d3mondev/puredns/v2@latest
-```
 
 # Usage
 
-Make sure to view the complete list of available commands and options using `puredns --help`.
+### Installation
 
-If a `resolvers.txt` file is present in the current working directory, puredns will automatically use it as a list of public resolvers. Otherwise, specify the list of resolvers to use using the `-r` argument.
+#### From Docker Hub
+```bash
+❯ docker pull frost19k/puredns
+```
+
+#### Clone the repo
+```bash
+❯ git clone https://github.com/frost19k/puredns-docker.git
+❯ cd puredns-docker
+❯ docker buildx build -t puredns -f Dockerfile .
+```
 
 ### Subdomain bruteforcing
 
 Here's how to bruteforce a massive list of subdomains using a wordlist named `all.txt`:
-
-`puredns bruteforce all.txt domain.com`
+```bash
+❯ docker run -t --rm \ 
+  -v "${PWD}/all.txt":"/puredns/all.txt" \
+  frost19k/puredns bruteforce all.txt domain.com
+```
 
 ### Resolving a list of domains
 
 You can also resolve a list of domains contained in a text file (one per line).
-
-`puredns resolve domains.txt`
-
-### Stdin operation
-
-You can pass the list of domains to resolve through stdin:
-
-`cat domains.txt | puredns resolve`
-
-Or a list of words to use for bruteforcing:
-
-`cat wordlist.txt | puredns bruteforce domain.com`
-
-You can also add the `-q` switch to output only the domains found to pipe to other tools:
-
-`cat domains.txt | puredns resolve -q | httprobe`
+```bash
+❯ docker run -t --rm \ 
+  -v "${PWD}/domains.txt":"/puredns/domains.txt" \
+  frost19k/puredns resolve domains.txt
+```
 
 ### Saving the results to files
 
@@ -135,10 +78,14 @@ You can save the following information to files to reuse it in your workflows:
 * **wildcard root domains**: list of the wildcard root domains found (i.e., *\*.store.yahoo.com*)
 * **massdns results file (-o Snl text output)**: can be used as a reference and to extract A and CNAME records.
 
-```
-puredns resolve domains.txt --write valid_domains.txt \
-                            --write-wildcards wildcards.txt \
-                            --write-massdns massdns.txt
+```bash
+❯ docker run -t --rm \ 
+  -v "${PWD}/domains.txt":"/puredns/domains.txt" \
+  -v "${PWD}/results":"/puredns/results" \
+  frost19k/puredns resolve domains.txt \
+  --write results/valid_domains.txt \
+  --write-wildcards results/wildcards.txt \
+  --write-massdns results/massdns.txt
 ```
 
 # How it works
@@ -238,20 +185,6 @@ Puredns v1.0 is still available in git but it is no longer maintained. If you st
 [all.txt wordlist](https://gist.github.com/jhaddix/f64c97d0863a78454e44c2f7119c2a6a) Jhaddix's iconic `all.txt` wordlist is commonly used for subdomain enumeration.
 
 [shuffleDNS](https://github.com/projectdiscovery/shuffledns) is a good alternative written in go that handles wildcard subdomains using a different algorithm.
-
-# Contributions
-
-You can contribute to puredns in the following ways:
-
-* [Submit new feature ideas](https://github.com/d3mondev/puredns/issues)
-* [Report bugs](https://github.com/d3mondev/puredns/issues) as issues
-* Star ⭐ this repository
-* Spread the word about puredns
-* [Become a sponsor](https://github.com/sponsors/d3mondev) 🥇 and earn unique perks
-
-Do you have an idea for an amazing new feature? Did you find a bug you want to fix? Great! Please [submit an issue](https://github.com/d3mondev/puredns/issues) for discussion before making a pull request. At this point, I am unsure if I will be accepting PRs.
-
-I will not be accepting pull requests for trivial changes such as typo corrections, best practices, minor fixes, etc.
 
 # Disclaimer & License
 
