@@ -13,7 +13,7 @@
 
 # About
 
-###### Forked from https://github.com/d3mondev/puredns because they [do not wish to support a dockerised app](https://github.com/d3mondev/puredns/pull/20#issuecomment-919667417).
+###### Forked from https://github.com/d3mondev/puredns because they [do not wish to support a dockerised app](https://github.com/d3mondev/puredns/pull/20#issuecomment-919667417). If they change their mind, I will probably delete this repo.
 
 **puredns** is a fast domain resolver and subdomain bruteforcing tool that can accurately filter out wildcard subdomains and DNS poisoned entries.
 
