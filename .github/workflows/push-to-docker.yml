@@ -3,10 +3,11 @@ name: CI to Docker Hub
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
+    tags:
+      - 'v*'
   schedule:
-    - cron: '0 4 * * *' # Run at 4:00 AM UTC
-
+    - cron: '0 4 3 * *' # Run at 4:00 AM UTC on 3rd of every month
 
 jobs:
   push_to_registry:
