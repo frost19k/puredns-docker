@@ -13,7 +13,7 @@
 
 # About
 
-###### Forked from https://github.com/d3mondev/puredns because they [do not wish to support a dockerised app](https://github.com/d3mondev/puredns/pull/20#issuecomment-919667417). If they change their mind, I will probably delete this repo.
+###### >>> Forked from https://github.com/d3mondev/puredns because they [do not wish to support a dockerised app](https://github.com/d3mondev/puredns/pull/20#issuecomment-919667417). If they change their mind, I will probably delete this repo.
 
 **puredns** is a fast domain resolver and subdomain bruteforcing tool that can accurately filter out wildcard subdomains and DNS poisoned entries.
 
@@ -45,10 +45,10 @@ Think this is useful? :star: Star us on GitHub — it helps!
 ❯ docker pull frost19k/puredns
 ```
 
-#### Clone the repo
+#### Build it yourself
 ```bash
-❯ git clone https://github.com/frost19k/puredns-docker.git
-❯ cd puredns-docker
+❯ git clone -b puredns https://github.com/frost19k/Dockerfiles.git ./puredns
+❯ cd puredns
 ❯ docker buildx build -t puredns -f Dockerfile .
 ```
 
@@ -56,7 +56,7 @@ Think this is useful? :star: Star us on GitHub — it helps!
 
 Here's how to bruteforce a massive list of subdomains using a wordlist named `all.txt`:
 ```bash
-❯ docker run -t --rm \ 
+❯ docker run -t --rm \
   -v "${PWD}/all.txt":"/puredns/all.txt" \
   frost19k/puredns bruteforce all.txt domain.com
 ```
@@ -65,7 +65,7 @@ Here's how to bruteforce a massive list of subdomains using a wordlist named `al
 
 You can also resolve a list of domains contained in a text file (one per line).
 ```bash
-❯ docker run -t --rm \ 
+❯ docker run -t --rm \
   -v "${PWD}/domains.txt":"/puredns/domains.txt" \
   frost19k/puredns resolve domains.txt
 ```
@@ -79,7 +79,7 @@ You can save the following information to files to reuse it in your workflows:
 * **massdns results file (-o Snl text output)**: can be used as a reference and to extract A and CNAME records.
 
 ```bash
-❯ docker run -t --rm \ 
+❯ docker run -t --rm \
   -v "${PWD}/domains.txt":"/puredns/domains.txt" \
   -v "${PWD}/results":"/puredns/results" \
   frost19k/puredns resolve domains.txt \
